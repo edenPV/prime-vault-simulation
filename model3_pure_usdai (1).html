@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model 3 — Pure USDai Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f4f4f5;
+  --color-background-success: #dcfce7;
+  --color-background-warning: #fef9c3;
+  --color-background-danger: #fee2e2;
+
+  --color-text-primary: #111110;
+  --color-text-secondary: #3e3b36;
+  --color-text-tertiary: #7a756c;
+  --color-text-success: #15803d;
+  --color-text-warning: #a16207;
+  --color-text-danger: #b91c1c;
+
+  --color-border-tertiary: #e4e2de;
+  --color-border-secondary: #ccc9c3;
+
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+
+  background: #f8f8f7;
+  min-height: 100vh;
+}
+
+body {
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 16px 20px;
+  background: #f8f8f7;
+  color: var(--color-text-primary);
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border-tertiary);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #378ADD;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #378ADD;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+.w{padding:.75rem 0;font-family:var(--font-sans);font-size:12px}
+.badge{font-size:10px;font-weight:500;padding:3px 10px;border-radius:99px;background:var(--color-background-success);color:var(--color-text-success);display:inline-block;margin-bottom:.5rem}
+.pr{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
+.pr span{font-size:10px;color:var(--color-text-tertiary)}
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:500;cursor:pointer;border:none}
+.tok{background:var(--color-background-success);color:var(--color-text-success)}
+.tw{background:var(--color-background-warning);color:var(--color-text-warning)}
+.td{background:var(--color-background-danger);color:var(--color-text-danger)}
+.hero{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.75rem}
+.card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:.75rem 1rem}
+.tr{font-size:9px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
+.ast{font-size:9px;color:var(--color-text-tertiary);margin-bottom:5px}
+.num{font-size:32px;font-weight:500;line-height:1;margin-bottom:1px}
+.den{font-size:10px;color:var(--color-text-tertiary);margin-bottom:6px}
+.bdr{display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-tertiary);padding:2px 0;border-bottom:.5px solid var(--color-border-tertiary)}
+.bdr:last-child{border-bottom:none}
+.bdr .v{font-weight:500;color:var(--color-text-primary);font-family:var(--font-mono);font-size:10px}
+.bk{margin-top:6px;padding-top:6px;border-top:.5px solid var(--color-border-tertiary)}
+.tvl{font-size:9px;color:var(--color-text-tertiary);margin-top:5px;padding-top:5px;border-top:.5px solid var(--color-border-tertiary)}
+.cdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.main{display:grid;grid-template-columns:230px 1fr;gap:12px;align-items:start}
+.sect{font-size:9px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin:8px 0 4px;padding-bottom:2px;border-bottom:.5px solid var(--color-border-tertiary);font-weight:500}
+.sect:first-child{margin-top:0}
+.cr{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.cl{font-size:10px;color:var(--color-text-secondary);flex:1}
+.cv{font-size:10px;font-weight:500;color:var(--color-text-primary);min-width:44px;text-align:right}
+.cr input{width:72px;flex-shrink:0}
+.pt{font-size:9px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;margin-top:10px}
+.pt:first-child{margin-top:0}
+.mets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.met{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:6px 8px}
+.ml{font-size:9px;color:var(--color-text-secondary);margin-bottom:1px}
+.mv{font-size:13px;font-weight:500}
+.ms{font-size:8px;color:var(--color-text-tertiary);margin-top:1px}
+.crb{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px;margin-bottom:8px}
+.crt{font-size:9px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.crr{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.crr:last-child{margin-bottom:0}
+.crf{font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);flex:1;line-height:1.5}
+.crv{font-size:14px;font-weight:500;min-width:44px;text-align:right}
+.la{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.lb{border-radius:var(--border-radius-md);padding:6px 8px}
+.lt{font-size:9px;font-weight:500;margin-bottom:2px}
+.lv{font-size:13px;font-weight:500}
+.ln{font-size:9px;margin-top:1px;opacity:.85}
+.wfb{display:flex;gap:4px;height:64px;align-items:flex-end;margin-bottom:3px}
+.wfc{flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end}
+.wb{border-radius:2px 2px 0 0;min-height:2px;transition:height .3s}
+.wbl{opacity:.4;border-radius:2px 2px 0 0}
+.wblbl{font-size:8px;text-align:center;color:var(--color-text-tertiary);margin-top:3px;line-height:1.3}
+.wfl{display:flex;flex-direction:column;gap:5px}
+.ws{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--color-text-secondary);flex-wrap:wrap}
+.wb2{padding:2px 8px;border-radius:3px;font-size:10px;font-weight:500}
+.b-sr{background:#E6F1FB;color:#0C447C}
+.b-mz{background:#FAEEDA;color:#633806}
+.b-jr{background:#EAF3DE;color:#27500A}
+.b-am{background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-mono);font-size:9px}
+.wi{padding-left:12px;color:var(--color-text-tertiary);font-size:9px;line-height:1.5}
+.nt{border-left:2px solid var(--color-border-secondary);padding:5px 8px;font-size:10px;color:var(--color-text-secondary);line-height:1.5;border-radius:0 4px 4px 0;background:var(--color-background-secondary);margin-top:5px}
+.nt.ok{border-color:#1D9E75;background:var(--color-background-success);color:var(--color-text-success)}
+.nt.wn{border-color:#EF9F27;background:var(--color-background-warning);color:var(--color-text-warning)}
+.nt.dg{border-color:#E24B4A;background:var(--color-background-danger);color:var(--color-text-danger)}
+.dv{height:.5px;background:var(--color-border-tertiary);margin:8px 0}
+.cons{font-family:var(--font-mono);font-size:10px;padding:5px 8px;border-radius:var(--border-radius-md);margin-top:5px}
+.c-ok{background:var(--color-background-success);color:var(--color-text-success)}
+.c-fail{background:var(--color-background-danger);color:var(--color-text-danger)}
+</style>
+</head>
+<body>
+
+<div class="w">
+<div class="badge">Sr: sUSDai · Mez: sUSDai · Jr: sUSDai — 100% USDai all tranches</div>
+
+<div class="pr">
+  <span>Preset</span>
+  <button class="tag tok" onclick="ap('base')">Base</button>
+  <button class="tag tw" onclick="ap('low')">Low yield</button>
+  <button class="tag tw" onclick="ap('floor')">Floor active</button>
+  <button class="tag td" onclick="ap('cB_jr')">Case B · Jr</button>
+  <button class="tag td" onclick="ap('cB_mz')">Case B · Mez</button>
+  <button class="tag tok" onclick="ap('srH')">Sr heavy</button>
+  <button class="tag tw" onclick="ap('jrT')">Jr thin</button>
+  <button class="tag tok" onclick="ap('bal')">Balanced</button>
+  <button class="tag tok" onclick="ap('high')">High yield</button>
+</div>
+
+<div class="hero" id="hero"></div>
+<div class="la" id="la"></div>
+
+<div class="main">
+<div>
+  <div class="sect">TVL — all sUSDai</div>
+  <div class="cr"><span class="cl">TVL_sr ($M)</span><input type="range" min="1" max="30" step="1" value="10" id="p_sr"><span class="cv" id="l_sr">$10M</span></div>
+  <div class="cr"><span class="cl">TVL_mz ($M)</span><input type="range" min="1" max="20" step="1" value="5" id="p_mz"><span class="cv" id="l_mz">$5M</span></div>
+  <div class="cr"><span class="cl">TVL_jr ($M)</span><input type="range" min="0.5" max="15" step="0.5" value="3" id="p_jr"><span class="cv" id="l_jr">$3M</span></div>
+
+  <div class="sect">Yield</div>
+  <div class="cr"><span class="cl">GrossBaseAPY</span><input type="range" min="50" max="1500" step="10" value="762" id="p_apy"><span class="cv" id="l_apy">7.62%</span></div>
+  <div class="cr"><span class="cl">FloorAPY_sr</span><input type="range" min="50" max="600" step="25" value="275" id="p_fl"><span class="cv" id="l_fl">2.75%</span></div>
+  <div class="cr"><span class="cl">FloorAPY_mz</span><input type="range" min="50" max="600" step="25" value="275" id="p_fm"><span class="cv" id="l_fm">2.75%</span></div>
+  <div class="cr"><span class="cl">reserveBps</span><input type="range" min="0" max="1000" step="50" value="500" id="p_rs"><span class="cv" id="l_rs">5.00%</span></div>
+
+  <div class="sect">Risk premium</div>
+  <div class="cr"><span class="cl">x_sr</span><input type="range" min="0" max="3000" step="50" value="1500" id="p_xs"><span class="cv" id="l_xs">15.0%</span></div>
+  <div class="cr"><span class="cl">y_sr</span><input type="range" min="0" max="3000" step="50" value="1250" id="p_ys"><span class="cv" id="l_ys">12.5%</span></div>
+  <div class="cr"><span class="cl">x_mz</span><input type="range" min="0" max="2000" step="50" value="500" id="p_xm"><span class="cv" id="l_xm">5.0%</span></div>
+  <div class="cr"><span class="cl">y_mz</span><input type="range" min="0" max="3000" step="50" value="1500" id="p_ym"><span class="cv" id="l_ym">15.0%</span></div>
+</div>
+
+<div>
+  <div class="pt">Coverage ratios</div>
+  <div class="crb" id="crb"></div>
+
+  <div class="pt">Protocol metrics</div>
+  <div class="mets" id="mets"></div>
+
+  <div class="pt">Loss stack</div>
+  <div class="wfb" id="wfb"></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px" id="wflbl"></div>
+
+  <div class="dv"></div>
+  <div class="pt">Yield waterfall</div>
+  <div id="flow"></div>
+</div>
+</div>
+</div>
+
+<script>
+const K={k_sr:.30,k_mz:.50};
+const g=id=>parseFloat(document.getElementById(id).value);
+const pct=(v,d=2)=>(v*100).toFixed(d)+'%';
+const fM=(v,d=2)=>'$'+Math.abs(v).toFixed(d)+'M';
+const ac=v=>v>=0.03?'var(--color-text-success)':v>=0?'var(--color-text-warning)':'var(--color-text-danger)';
+const cdT=s=>{const c=s==='Instant'?'tok':s.includes('Asset')?'tw':'td';return`<span class="tag ${c}">${s}</span>`;};
+
+function compute(){
+  const sr=g('p_sr'),mz=g('p_mz'),jr=g('p_jr');
+  const gross=g('p_apy')/10000,floor_sr=g('p_fl')/10000,floor_mz=g('p_fm')/10000,res=g('p_rs')/10000;
+  const xsr=g('p_xs')/10000,ysr=g('p_ys')/10000;
+  const xmz=g('p_xm')/10000,ymz=g('p_ym')/10000;
+
+  const pool=sr+mz+jr, sub=mz+jr;
+  const CR_SR=pool/Math.max(sr,.001);
+  const CR_MZ=sub/Math.max(mz,.001);
+
+  const rsr=sr/pool, rmz=sub>0?mz/sub:0;
+  const RP_sr=xsr+ysr*Math.pow(rsr,K.k_sr);
+  const RP_mz=xmz+ymz*Math.pow(rmz,K.k_mz);
+
+  const BaseAPY=gross*(1-res);
+  const netGain=BaseAPY*pool;
+
+  // #3 — yTgt uses APY_sr_target (MAX formula) + FloorAPY_mz × TVL_mz
+  const APY_sr_formula=BaseAPY*(1-RP_sr);
+  const APY_sr_target=Math.max(floor_sr,APY_sr_formula);
+  const yTgt=APY_sr_target*sr + floor_mz*mz;
+
+  let ct,floor_sr_on=false,floor_mz_on=false,subAPY=0;
+  let Y_sr,Y_mz,Y_jr,APY_sr,APY_mz,APY_jr;
+  let jr_absorb=0,mz_absorb=0,deficit=0;
+
+  if(netGain>=yTgt){
+    // Case A — both floors can be funded from yield
+    ct='A';
+    floor_sr_on=(APY_sr_formula<floor_sr);
+    Y_sr=APY_sr_target*sr;
+    const Y_sub=netGain-Y_sr;
+    subAPY=Y_sub/Math.max(sub,.001);
+    // #2 — APY_mz = MAX(FloorAPY_mz, SubAPY × (1 − RP_mz))
+    const APY_mz_formula=subAPY*(1-RP_mz);
+    floor_mz_on=(APY_mz_formula<floor_mz);
+    APY_mz=Math.max(floor_mz,APY_mz_formula);
+    Y_mz=APY_mz*mz;
+    Y_jr=Y_sub-Y_mz;
+    APY_sr=APY_sr_target;
+    APY_jr=Y_jr/Math.max(jr,.001);
+  } else {
+    // Case B — total yield < combined floor requirement
+    ct='B';floor_sr_on=true;floor_mz_on=true;
+    // #4 — deficit already correct since yTgt includes floor_mz × TVL_mz
+    deficit=yTgt-netGain;
+    jr_absorb=Math.min(deficit,jr);
+    mz_absorb=Math.max(0,deficit-jr);
+    Y_sr=APY_sr_target*sr;
+    APY_sr=APY_sr_target;
+    // #5 — APY_mz = FloorAPY_mz − mezz_absorbs / TVL_mz
+    APY_mz=floor_mz-mz_absorb/Math.max(mz,.001);
+    Y_mz=APY_mz*mz;
+    Y_jr=-jr_absorb;
+    APY_jr=-jr_absorb/Math.max(jr,.001);
+  }
+
+  const conservation=Math.abs(Y_sr+Y_mz+Y_jr-netGain)<0.001;
+  return{sr,mz,jr,pool,sub,BaseAPY,gross,netGain,yTgt,
+    RP_sr,RP_mz,rsr,rmz,CR_SR,CR_MZ,floor_sr,floor_mz,
+    APY_sr_target,APY_sr_formula,
+    ct,floor_sr_on,floor_mz_on,deficit,jr_absorb,mz_absorb,subAPY,
+    Y_sr,Y_mz,Y_jr,APY_sr,APY_mz,APY_jr,conservation};
+}
+
+function cdl(csr,cmz){
+  // Senior always instant
+  let sr='Instant',mz='Instant',jr='Instant';
+  // #7 — Mezzanine governed by CR_SR only
+  if(csr<1.15){mz='Share lock';}else if(csr<1.30){mz='Asset lock';}
+  // Junior governed by CR_SR (same as Mez) then tightened by CR_MZ
+  if(csr<1.15){jr='Share lock';}else if(csr<1.30){jr='Asset lock';}
+  // CR_MZ can only tighten Junior further, never Mezzanine
+  if(cmz<1.20){if(jr!=='Share lock')jr='Share lock';}
+  else if(cmz<1.35){if(jr==='Instant')jr='Asset lock';}
+  return{sr,mz,jr};
+}
+// #6 — Updated thresholds: CR_SR 1.30/1.15, CR_MZ 1.35/1.20
+const crc=v=>v>1.30?'var(--color-text-success)':v>1.15?'var(--color-text-warning)':'var(--color-text-danger)';
+const crcMZ=v=>v>1.35?'var(--color-text-success)':v>1.20?'var(--color-text-warning)':'var(--color-text-danger)';
+const crs=v=>v>1.30?'Healthy':v>1.15?'Monitoring':'Warning';
+const crsMZ=v=>v>1.35?'Healthy':v>1.20?'Monitoring':'Warning';
+const crtag=v=>`<span class="tag ${v>1.30?'tok':v>1.15?'tw':'td'}">${crs(v)}</span>`;
+const crtagMZ=v=>`<span class="tag ${v>1.35?'tok':v>1.20?'tw':'td'}">${crsMZ(v)}</span>`;
+
+function render(){
+  const d=compute(),c=cdl(d.CR_SR,d.CR_MZ);
+
+  document.getElementById('hero').innerHTML=`
+  <div class="card">
+    <div class="cdr"><div><div class="tr">Senior</div><div class="ast" style="color:#185FA5">sUSDai — last loss</div></div>${cdT(c.sr)}</div>
+    <div class="num" style="color:${ac(d.APY_sr)}">${pct(d.APY_sr,2)}</div>
+    <div class="den">on ${fM(d.sr)} sUSDai${d.floor_sr_on?' · <span style="color:var(--color-text-warning)">floor</span>':''}</div>
+    <div class="bk">
+      <div class="bdr"><span>Yield</span><span class="v">${fM(d.Y_sr)}</span></div>
+      <div class="bdr"><span>BaseAPY</span><span class="v">${pct(d.BaseAPY,2)}</span></div>
+      <div class="bdr"><span>RP_sr paid</span><span class="v">${pct(d.RP_sr,1)}</span></div>
+      <div class="bdr"><span>yTgt (Sr+Mz floors)</span><span class="v">${fM(d.yTgt)}</span></div>
+    </div>
+    <div class="tvl">TVL_sr ${fM(d.sr)} · 100% sUSDai</div>
+  </div>
+
+  <div class="card">
+    <div class="cdr"><div><div class="tr">Mezzanine</div><div class="ast" style="color:#854F0B">sUSDai — second loss</div></div>${cdT(c.mz)}</div>
+    <div class="num" style="color:${ac(d.APY_mz)}">${pct(d.APY_mz,2)}</div>
+    <div class="den">on ${fM(d.mz)} sUSDai${d.floor_mz_on&&d.ct==='A'?' · <span style="color:var(--color-text-warning)">floor</span>':''}${d.ct==='B'&&d.mz_absorb>0?' · <span style="color:var(--color-text-danger)">loss</span>':''}</div>
+    <div class="bk">
+      <div class="bdr"><span>SubAPY</span><span class="v">${d.ct==='A'?pct(d.subAPY,2):'—'}</span></div>
+      <div class="bdr"><span>MAX(Floor_mz, SubAPY×(1−RP_mz))</span><span class="v">${d.ct==='A'?pct(d.APY_mz,2):'—'}</span></div>
+      <div class="bdr"><span>Yield</span><span class="v" style="color:${d.Y_mz>=0?'var(--color-text-success)':'var(--color-text-danger)'}">${fM(d.Y_mz)}</span></div>
+      ${d.ct==='B'&&d.mz_absorb>0?`<div class="bdr"><span>principal absorbed</span><span class="v" style="color:var(--color-text-danger)">−${fM(d.mz_absorb)}</span></div>`:''}
+    </div>
+    <div class="tvl">TVL_mz ${fM(d.mz)} · 100% sUSDai</div>
+  </div>
+
+  <div class="card">
+    <div class="cdr"><div><div class="tr">Junior</div><div class="ast" style="color:#3B6D11">sUSDai — first loss</div></div>${cdT(c.jr)}</div>
+    <div class="num" style="color:${ac(d.APY_jr)}">${pct(d.APY_jr,2)}</div>
+    <div class="den">on ${fM(d.jr)} sUSDai${d.APY_jr<0?' · <span style="color:var(--color-text-danger)">first loss</span>':''}</div>
+    <div class="bk">
+      ${d.ct==='A'
+        ?`<div class="bdr"><span>Residual yield</span><span class="v" style="color:var(--color-text-success)">${fM(d.Y_jr)}</span></div>
+          <div class="bdr"><span>= Y_sub − Y_mz</span><span class="v">${pct(d.APY_jr,2)}</span></div>
+          <div class="bdr"><span>Includes RP_mz from Mez</span><span class="v">${pct(d.RP_mz,1)}</span></div>`
+        :`<div class="bdr"><span>Jr absorb</span><span class="v" style="color:var(--color-text-danger)">−${fM(d.jr_absorb)}</span></div>
+          <div class="bdr"><span>MIN(deficit, TVL_jr)</span><span class="v">${d.jr_absorb>=d.deficit-.001?'covers all ✓':'Jr exhausted'}</span></div>`}
+    </div>
+    <div class="tvl">TVL_jr ${fM(d.jr)} · 100% sUSDai</div>
+  </div>`;
+
+  document.getElementById('la').innerHTML=d.ct==='B'?`
+    <div class="lb" style="background:var(--color-background-secondary)">
+      <div class="lt" style="color:var(--color-text-tertiary)">Deficit</div>
+      <div class="lv" style="color:var(--color-text-danger)">${fM(d.deficit)}</div>
+      <div class="ln" style="color:var(--color-text-tertiary)">yTarget − netGain</div>
+    </div>
+    <div class="lb" style="background:var(--color-background-danger)">
+      <div class="lt" style="color:var(--color-text-danger)">Junior (first)</div>
+      <div class="lv" style="color:var(--color-text-danger)">${fM(d.jr_absorb)}</div>
+      <div class="ln" style="color:var(--color-text-danger)">sUSDai direct · no oracle</div>
+    </div>
+    <div class="lb" style="background:${d.mz_absorb>0?'var(--color-background-danger)':'var(--color-background-success)'}">
+      <div class="lt" style="color:${d.mz_absorb>0?'var(--color-text-danger)':'var(--color-text-success)'}">Mez (second)</div>
+      <div class="lv" style="color:${d.mz_absorb>0?'var(--color-text-danger)':'var(--color-text-success)'}">${fM(d.mz_absorb)}</div>
+      <div class="ln" style="color:${d.mz_absorb>0?'var(--color-text-danger)':'var(--color-text-success)'}">${d.mz_absorb===0?'intact ✓':'sUSDai direct'}</div>
+    </div>`
+    :`<div class="lb" style="background:var(--color-background-success);grid-column:1/-1">
+      <div class="lt" style="color:var(--color-text-success)">Case A — no loss</div>
+      <div class="lv" style="color:var(--color-text-success)">${fM(d.netGain)} ≥ yTarget ${fM(d.yTgt)}</div>
+    </div>`;
+
+  document.getElementById('crb').innerHTML=`
+    <div class="crt">CR = total coverage / protected tranche</div>
+    <div class="crr">
+      <div class="crf">CR_SR = TVL_pool / TVL_sr<br><span style="color:var(--color-text-tertiary)">${fM(d.pool)} / ${fM(d.sr)}</span></div>
+      <div class="crv" style="color:${crc(d.CR_SR)}">${d.CR_SR.toFixed(2)}x</div>
+      <div>${crtag(d.CR_SR)}</div>
+    </div>
+    <div style="height:.5px;background:var(--color-border-tertiary);margin:4px 0"></div>
+    <div class="crr">
+      <div class="crf">CR_MZ = (TVL_mz + TVL_jr) / TVL_mz<br><span style="color:var(--color-text-tertiary)">${fM(d.sub)} / ${fM(d.mz)}</span></div>
+      <div class="crv" style="color:${crcMZ(d.CR_MZ)}">${d.CR_MZ.toFixed(2)}x</div>
+      <div>${crtagMZ(d.CR_MZ)}</div>
+    </div>`;
+
+  document.getElementById('mets').innerHTML=`
+    <div class="met"><div class="ml">BaseAPY</div><div class="mv">${pct(d.BaseAPY,2)}</div><div class="ms">Gross ${pct(d.gross)} after reserve</div></div>
+    <div class="met"><div class="ml">NetGain / yTarget</div>
+      <div class="mv" style="color:${d.netGain>=d.yTgt?'var(--color-text-success)':'var(--color-text-danger)'}">${fM(d.netGain,1)} / ${fM(d.yTgt,1)}</div>
+      <div class="ms"><span class="tag ${d.ct==='A'?'tok':'td'}" style="font-size:8px">Case ${d.ct}${d.ct==='B'?' deficit '+fM(d.deficit,2):''}</span></div></div>
+    <div class="met"><div class="ml">SubAPY</div>
+      <div class="mv">${d.ct==='A'?pct(d.subAPY,2):'—'}</div>
+      <div class="ms">Y_sub / TVL_sub · pure USDai</div></div>
+    <div class="met"><div class="ml">RP_sr / RP_mz</div><div class="mv">${pct(d.RP_sr,1)} / ${pct(d.RP_mz,1)}</div><div class="ms">Ratio ${(d.rsr*100).toFixed(0)}% / ${(d.rmz*100).toFixed(0)}%</div></div>
+    <div class="met"><div class="ml">TVL_pool</div><div class="mv">${fM(d.pool)}</div><div class="ms">100% sUSDai · no dilution</div></div>
+    <div class="met"><div class="ml">Cooldown</div>
+      <div class="mv" style="font-size:10px">${cdT(c.mz)} Mez</div>
+      <div class="ms">${cdT(c.jr)} Jr</div></div>`;
+
+  const CAP=d.pool+1e-9,H=64;
+  const bars=[
+    {r:Math.max(0,d.jr-d.jr_absorb),l:d.jr_absorb,c:'#1D9E75',lbl:'Junior\nsUSDai'},
+    {r:Math.max(0,d.mz-d.mz_absorb),l:d.mz_absorb,c:'#EF9F27',lbl:'Mez\nsUSDai'},
+    {r:d.sr,l:0,c:'#378ADD',lbl:'Senior\nsUSDai'},
+  ];
+  let bh='',lh='';
+  bars.forEach(b=>{
+    const rh=Math.max(2,Math.round(b.r/CAP*H)),lh2=Math.round(b.l/CAP*H);
+    bh+=`<div class="wfc">${b.l>0?`<div class="wb wbl" style="height:${lh2}px;background:#E24B4A"></div>`:''}
+      <div class="wb" style="height:${rh}px;background:${b.c}"></div></div>`;
+    lh+=`<div class="wblbl">${b.lbl.split('\n').join('<br>')}</div>`;
+  });
+  document.getElementById('wfb').innerHTML=bh;
+  document.getElementById('wflbl').innerHTML=lh;
+
+  let fh='';
+  if(d.ct==='A'){
+    const Y_sub=d.netGain-d.Y_sr;
+    fh=`<div class="wfl">
+      <div class="ws"><span class="wb2 b-sr">Senior</span><span style="color:var(--color-text-tertiary)">MAX(Floor_sr, BaseAPY×(1−RP_sr))</span><span class="wb2 b-am">${fM(d.Y_sr)} · ${pct(d.APY_sr,2)}</span>${d.floor_sr_on?'<span class="tag tw" style="font-size:8px">floor_sr</span>':''}</div>
+      <div class="wi">Y_sub = ${fM(Y_sub)} → SubAPY ${pct(d.subAPY,2)} / TVL_sub ${fM(d.sub)}</div>
+      <div class="ws" style="padding-left:10px"><span class="wb2 b-mz">Mez</span><span style="color:var(--color-text-tertiary)">MAX(Floor_mz ${pct(d.floor_mz,2)}, SubAPY×(1−RP_mz ${pct(d.RP_mz,1)}))</span><span class="wb2 b-am">${fM(d.Y_mz)} · ${pct(d.APY_mz,2)}</span>${d.floor_mz_on?'<span class="tag tw" style="font-size:8px">floor_mz</span>':''}</div>
+      <div class="wi" style="padding-left:22px">pays RP_mz ${pct(d.RP_mz,1)} → Junior</div>
+      <div class="ws" style="padding-left:10px"><span class="wb2 b-jr">Junior</span><span style="color:var(--color-text-tertiary)">residual + RP_mz</span><span class="wb2 b-am">${fM(d.Y_jr)} · ${pct(d.APY_jr,2)}</span></div>
+    </div>
+    <div class="cons ${d.conservation?'c-ok':'c-fail'}">
+      Conservation: Y_sr + Y_mz + Y_jr = ${fM(d.Y_sr+d.Y_mz+d.Y_jr)} ${d.conservation?'= NetGain ✓':'≠ NetGain ✗'}
+    </div>`;
+  } else {
+    fh=`<div class="wfl">
+      <div class="ws"><span class="wb2 b-sr">Senior</span><span style="color:var(--color-text-tertiary)">floor guaranteed</span><span class="wb2 b-am">${fM(d.Y_sr)} · ${pct(d.APY_sr,2)}</span></div>
+      <div class="ws"><span class="wb2 b-jr" style="background:var(--color-background-danger);color:var(--color-text-danger)">Junior</span><span style="color:var(--color-text-danger)">first loss · sUSDai · no oracle · no swap</span><span class="wb2 b-am" style="color:var(--color-text-danger)">−${fM(d.jr_absorb)}</span></div>
+      ${d.mz_absorb>0
+        ?`<div class="ws"><span class="wb2 b-mz" style="background:var(--color-background-danger);color:var(--color-text-danger)">Mez</span><span style="color:var(--color-text-danger)">Floor_mz ${pct(d.floor_mz,2)} − absorb/TVL_mz · APY = ${pct(d.APY_mz,2)}</span><span class="wb2 b-am" style="color:var(--color-text-danger)">−${fM(d.mz_absorb)} principal</span></div>`
+        :`<div style="font-size:10px;color:var(--color-text-success)">Mez intact ✓ — APY_mz = Floor_mz ${pct(d.floor_mz,2)} (Junior covers full deficit)</div>`}
+    </div>
+    <div class="nt ${d.mz_absorb>0?'dg':'wn'}">Pure sUSDai — zero oracle dependency, zero DEX, zero swap in all scenarios.</div>`;
+  }
+  document.getElementById('flow').innerHTML=fh;
+}
+
+function ul(){
+  ['sr','mz','jr'].forEach(k=>document.getElementById('l_'+k).textContent='$'+g('p_'+k)+'M');
+  document.getElementById('l_apy').textContent=(g('p_apy')/100).toFixed(2)+'%';
+  document.getElementById('l_fl').textContent=(g('p_fl')/100).toFixed(2)+'%';
+  document.getElementById('l_fm').textContent=(g('p_fm')/100).toFixed(2)+'%';
+  document.getElementById('l_rs').textContent=(g('p_rs')/100).toFixed(2)+'%';
+  document.getElementById('l_xs').textContent=(g('p_xs')/100).toFixed(1)+'%';
+  document.getElementById('l_ys').textContent=(g('p_ys')/100).toFixed(1)+'%';
+  document.getElementById('l_xm').textContent=(g('p_xm')/100).toFixed(1)+'%';
+  document.getElementById('l_ym').textContent=(g('p_ym')/100).toFixed(1)+'%';
+}
+
+const P={
+  base: {p_sr:10,p_mz:5,p_jr:3,p_apy:762, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  low:  {p_sr:10,p_mz:5,p_jr:3,p_apy:350, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  floor:{p_sr:10,p_mz:5,p_jr:3,p_apy:260, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  cB_jr:{p_sr:10,p_mz:5,p_jr:3,p_apy:100, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  cB_mz:{p_sr:10,p_mz:5,p_jr:1,p_apy:50,  p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  srH:  {p_sr:20,p_mz:5,p_jr:3,p_apy:762, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  jrT:  {p_sr:10,p_mz:5,p_jr:1,p_apy:762, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  bal:  {p_sr:8, p_mz:8,p_jr:8,p_apy:762, p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+  high: {p_sr:10,p_mz:5,p_jr:3,p_apy:1300,p_fl:275,p_fm:275,p_rs:500,p_xs:1500,p_ys:1250,p_xm:500,p_ym:1500},
+};
+function ap(n){Object.entries(P[n]).forEach(([k,v])=>document.getElementById(k).value=v);ul();render();}
+['p_sr','p_mz','p_jr','p_apy','p_fl','p_fm','p_rs','p_xs','p_ys','p_xm','p_ym'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{ul();render();});
+});
+render();
+</script>
+</body>
+</html>
